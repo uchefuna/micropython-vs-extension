@@ -1,0 +1,336 @@
+{
+  "name": "micropython-vs-extension",
+  "displayName": "MicroPython VS Extension",
+  "description": "Upload MicroPython files to your ESP32-S3 board",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:micropython-vs-extension.openRepl"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "MicroPython Uploader Configuration",
+      "properties": {
+        "micropython.flash.baudRate": {
+          "type": "number",
+          "default": 921600,
+          "description": "Baud rate for USB/UART flashing (ignored for OTA)."
+        },
+        "micropython.flash.autoSearchDir": {
+          "type": "string",
+          "default": "${workspaceFolder}/build",
+          "description": "Folder to scan for the newest *.bin when no file is picked."
+        },
+        "micropython.flash.otaChunkSize": {
+          "type": "number",
+          "default": 1024,
+          "description": "Chunk size (bytes) for OTA upload when using esp://"
+        },
+        "micropython-vs-extension.defaultExclusions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            "microdot",
+            ".git",
+            "git",
+            ".vscode",
+            ".venv",
+            "libs",
+            "login\\pbkdf21.py",
+            "air.py",
+            "__pycache__",
+            "*.log",
+            "ESP32-S3 N16R8 board.txt",
+            "pymakr.conf",
+            "reset_script.py",
+            "bg_log.txt",
+            "empty_main.py",
+            "main1.py",
+            "main2.py",
+            "main3.py",
+            "index1.html",
+            "package-lock.json",
+            "tasks.py",
+            "thread_manager.py",
+            "ws_server.py",
+            "wsmini_server.py",
+            "WSMinimalServer.py",
+            "check_microdot_active.py",
+            "check_microdot_http.py"
+          ],
+          "description": "Default exclusion patterns for uploads (e.g., .vscode, .venv, air.py)."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "micropython-vs-extension.selectRootFolder",
+        "title": "Select Root Folder",
+        "icon": {
+          "light": "resources/folder-light.svg",
+          "dark": "resources/folder-dark.svg"
+        }
+      },
+      {
+        "command": "micropython-vs-extension.otherOperation",
+        "title": "Other Operation",
+        "icon": {
+          "light": "resources/operation-light.svg",
+          "dark": "resources/operation-dark.svg"
+        }
+      },
+      {
+        "command": "micropython-vs-extension.connectToPortIcon",
+        "title": "Connect device",
+        "icon": "$(debug-disconnect)"
+      },
+      {
+        "command": "micropython-vs-extension.disconnectFromPortIcon",
+        "title": "Disconnect device",
+        "icon": "$(plug)"
+      },
+      {
+        "command": "micropython-vs-extension.uploadToBoard",
+        "title": "Upload to Board",
+        "icon": "$(cloud-upload)"
+      },
+      {
+        "command": "micropython-vs-extension.openREPL",
+        "title": "Open REPL",
+        "icon": "$(terminal)"
+      },
+      {
+        "command": "micropython-vs-extension.stopScript",
+        "title": "Stop Script"
+      },
+      {
+        "command": "micropython-vs-extension.exitAndRefocusRepl",
+        "title": "Exit and Refocus REPL"
+      },
+      {
+        "command": "micropython-vs-extension.closeActiveRepl",
+        "title": "Close REPL"
+      },
+      {
+        "command": "micropython-vs-extension.hardResetRepl",
+        "title": "Hard Reset Device"
+      },
+      {
+        "command": "micropython-vs-extension.softResetRepl",
+        "title": "Soft Reset Device"
+      },
+      {
+        "command": "micropython-vs-extension.listFilesRepl",
+        "title": "List Files Device"
+      },
+      {
+        "command": "micropython-vs-extension.configureDevice",
+        "title": "Configure Device"
+      },
+      {
+        "command": "micropython-vs-extension.listDeviceContents",
+        "title": "List Device Contents"
+      },
+      {
+        "command": "micropython-vs-extension.eraseDeviceContents",
+        "title": "Erase Device Contents"
+      },
+      {
+        "command": "micropython-vs-extension.openTerminalHistory",
+        "title": "Open Terminal History"
+      },
+      {
+        "command": "micropython-vs-extension.resetRootFolder",
+        "title": "Reset Root Folder"
+      },
+      {
+        "command": "micropython-vs-extension.micropythonFlashFirmware",
+        "title": "MicroPython: Flasher"
+      },
+      {
+        "command": "micropython-vs-extension.micropythonFlashFirmwareAuto",
+        "title": "MicroPython: Flasher Auto"
+      },
+      {
+        "command": "micropython-vs-extension.microPythonCleanBuild",
+        "title": "MicroPython: Clean Build"
+      },
+      {
+        "command": "micropython-vs-extension.sendCustomReplCommand",
+        "title": "VS REPL: Custom Command"
+      },
+      {
+        "command": "micropython-vs-extension.sendCustomReplWriteCommand",
+        "title": "VS REPL: Write Command"
+      }
+    ],
+    "menus": {
+      "explorer/context": [],
+      "editor/title": [],
+      "view/title": [
+        {
+          "command": "micropython-vs-extension.connectToPortIcon",
+          "when": "view == micropythonDeviceView && isConnected",
+          "group": "navigation",
+          "order": 1
+        },
+        {
+          "command": "micropython-vs-extension.disconnectFromPortIcon",
+          "when": "view == micropythonDeviceView && !isConnected",
+          "group": "navigation",
+          "order": 1
+        },
+        {
+          "command": "micropython-vs-extension.uploadToBoard",
+          "when": "view == micropythonDeviceView",
+          "group": "navigation",
+          "order": 2
+        },
+        {
+          "command": "micropython-vs-extension.openREPL",
+          "when": "view == micropythonDeviceView",
+          "group": "navigation",
+          "order": 3
+        },
+        {
+          "command": "micropython-vs-extension.stopScript",
+          "when": "view == micropythonDeviceView",
+          "group": "1_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.exitAndRefocusRepl",
+          "when": "view == micropythonDeviceView",
+          "group": "2_moreOptions",
+          "order": 5
+        },
+        {
+          "command": "micropython-vs-extension.closeActiveRepl",
+          "when": "view == micropythonDeviceView",
+          "group": "2_moreOptions",
+          "order": 4
+        },
+        {
+          "command": "micropython-vs-extension.hardResetRepl",
+          "when": "view == micropythonDeviceView",
+          "group": "2_moreOptions",
+          "order": 3
+        },
+        {
+          "command": "micropython-vs-extension.softResetRepl",
+          "when": "view == micropythonDeviceView",
+          "group": "2_moreOptions",
+          "order": 2
+        },
+        {
+          "command": "micropython-vs-extension.listFilesRepl",
+          "when": "view == micropythonDeviceView",
+          "group": "2_moreOptions",
+          "order": 1
+        },
+        {
+          "command": "micropython-vs-extension.configureDevice",
+          "when": "view == micropythonDeviceView",
+          "group": "3_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.listDeviceContents",
+          "when": "view == micropythonDeviceView",
+          "group": "3_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.eraseDeviceContents",
+          "when": "view == micropythonDeviceView",
+          "group": "3_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.openTerminalHistory",
+          "when": "view == micropythonDeviceView",
+          "group": "4_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.resetRootFolder",
+          "when": "view == micropythonDeviceView",
+          "group": "4_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.micropythonFlashFirmware",
+          "when": "view == micropythonDeviceView",
+          "group": "5_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.micropythonFlashFirmwareAuto",
+          "when": "view == micropythonDeviceView",
+          "group": "5_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.microPythonCleanBuild",
+          "when": "view == micropythonDeviceView",
+          "group": "5_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.sendCustomReplCommand",
+          "when": "view == micropythonDeviceView",
+          "group": "6_moreOptions"
+        },
+        {
+          "command": "micropython-vs-extension.sendCustomReplWriteCommand",
+          "when": "view == micropythonDeviceView",
+          "group": "6_moreOptions"
+        }
+      ]
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "micropython",
+          "title": "MP",
+          "icon": "resources/micropython.svg"
+        }
+      ]
+    },
+    "views": {
+      "micropython": [
+        {
+          "id": "micropythonDeviceView",
+          "name": "MicroPY Devices",
+          "icon": "resources/micropython.svg"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.100.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.25.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "@types/ws": "^8.18.1",
+    "serialport": "^13.0.0",
+    "where": "^0.4.2",
+    "which": "^5.0.0",
+    "ws": "^8.18.2"
+  }
+}
