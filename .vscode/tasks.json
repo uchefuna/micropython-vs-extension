@@ -15,6 +15,27 @@
 				"kind": "build",
 				"isDefault": true
 			}
-		}
+		},
+    {
+      "label": "Git Sync to GitHub",
+      "type": "shell",
+      "command": "powershell",
+      "args": [
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        "./sync.ps1"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    }
 	]
 }
